@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright (c) 2015, 2019, Gluon and/or its affiliates.
+  All rights reserved. Use is subject to license terms.
+
+  This file is available and licensed under the following license:
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+
+  - Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in
+    the documentation and/or other materials provided with the distribution.
+  - Neither the name of Oracle Corporation nor the names of its
+    contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+<?import javafx.scene.Group?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="exam.controllers.AppointmentController">
+  <children>
+    <MenuBar prefHeight="25.0" prefWidth="1063.0" VBox.vgrow="NEVER">
+      <menus>
+        <Menu mnemonicParsing="false" text="File">
+          <items>
+            <MenuItem mnemonicParsing="false" text="New" />
+            <MenuItem mnemonicParsing="false" text="Open…" />
+            <Menu mnemonicParsing="false" text="Open Recent" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Close" />
+            <MenuItem mnemonicParsing="false" text="Save" />
+            <MenuItem mnemonicParsing="false" text="Save As…" />
+            <MenuItem mnemonicParsing="false" text="Revert" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Preferences…" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Quit" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Edit">
+          <items>
+            <MenuItem mnemonicParsing="false" text="Undo" />
+            <MenuItem mnemonicParsing="false" text="Redo" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Cut" />
+            <MenuItem mnemonicParsing="false" text="Copy" />
+            <MenuItem mnemonicParsing="false" text="Paste" />
+            <MenuItem mnemonicParsing="false" text="Delete" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Select All" />
+            <MenuItem mnemonicParsing="false" text="Unselect All" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Help">
+          <items>
+            <MenuItem mnemonicParsing="false" text="About MyHelloApp" />
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
+    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" minWidth="1080.0" prefHeight="375.0" prefWidth="1100.0" VBox.vgrow="ALWAYS">
+      <children>
+            <TableView fx:id="appointmentTable" layoutX="11.0" prefHeight="200.0" prefWidth="1058.0" AnchorPane.leftAnchor="11.0" AnchorPane.topAnchor="0.0">
+              <columns>
+                <TableColumn fx:id="Appointment_ID" prefWidth="75.0" text="ID" />
+                <TableColumn fx:id="Title" prefWidth="75.0" text="Title" />
+                  <TableColumn fx:id="Description" prefWidth="75.0" text="Description" />
+                  <TableColumn fx:id="Location" prefWidth="75.0" text="Location" />
+                  <TableColumn fx:id="Type" prefWidth="75.0" text="Type" />
+                  <TableColumn fx:id="Start" prefWidth="75.0" text="Start" />
+                  <TableColumn fx:id="End" prefWidth="75.0" text="End" />
+                  <TableColumn fx:id="User_ID" prefWidth="75.0" text="User_ID" />
+                  <TableColumn fx:id="Contact_ID" prefWidth="75.0" text="Contact_ID" />
+                  <TableColumn fx:id="Created_By" prefWidth="75.0" text="Created By" />
+                  <TableColumn fx:id="Create_Date" prefWidth="108.0" text="Creation Date" />
+                  <TableColumn fx:id="Last_Updated_By" prefWidth="104.0" text="Last Updated By" />
+                  <TableColumn fx:id="Last_Update" prefWidth="99.0" text="Last Update" />
+              </columns>
+            </TableView>
+            <Group layoutX="14.0" layoutY="206.0">
+               <children>
+                  <Label text="Appointment ID" />
+                  <TextField fx:id="appointmentId" disable="true" editable="false" layoutY="19.0" />
+               </children>
+            </Group>
+            <Group>
+               <children>
+                  <Label layoutX="183.0" layoutY="206.0" text="Title" />
+                  <TextField fx:id="appointmentTitle" layoutX="183.0" layoutY="223.0" />
+               </children>
+            </Group>
+            <Group layoutX="349.0" layoutY="206.0">
+               <children>
+                  <Label text="Description" />
+                  <TextField fx:id="appointmentDescription" layoutY="17.0" />
+               </children>
+            </Group>
+            <Group layoutX="518.0" layoutY="206.0">
+               <children>
+                  <Label text="Location" />
+                  <TextField fx:id="appointmentLocation" layoutY="17.0" />
+               </children>
+            </Group>
+            <Group layoutX="684.0" layoutY="206.0">
+               <children>
+                  <Label text="Type" />
+                  <TextField fx:id="appointmentType" layoutY="17.0" />
+               </children>
+            </Group>
+            <Group layoutX="845.0" layoutY="206.0">
+               <children>
+                  <TextField fx:id="appointmentUserId" layoutY="17.0" />
+                  <Label text="User ID" />
+               </children>
+            </Group>
+            <Group layoutX="14.0" layoutY="250.0">
+               <children>
+                  <Label text="Start Date" />
+                  <DatePicker fx:id="appointmentStartDate" layoutY="18.0" />
+               </children>
+            </Group>
+            <Group layoutX="206.0" layoutY="251.0">
+               <children>
+                  <TextField fx:id="appointmentStartTime" layoutY="17.0" />
+                  <Label text="Start Time (24H Format)" />
+               </children>
+            </Group>
+            <Group layoutX="366.0" layoutY="250.0">
+               <children>
+                  <Label text="End Date" />
+                  <DatePicker fx:id="appointmentEndDate" layoutY="18.0" />
+               </children>
+            </Group>
+            <Group layoutX="558.0" layoutY="251.0">
+               <children>
+                  <TextField fx:id="appointmentEndTime" layoutY="17.0" />
+                  <Label text="End Time (24H Format)" />
+               </children>
+            </Group>
+            <Group layoutX="728.0" layoutY="248.0">
+               <children>
+                  <Label text="Contact" />
+                  <ComboBox fx:id="appointmentContactSelect" layoutX="2.0" layoutY="20.0" prefWidth="150.0" />
+               </children>
+            </Group>
+            <Button fx:id="saveButton" layoutX="14.0" layoutY="305.0" mnemonicParsing="false" onAction="#saveAppointment" prefHeight="25.0" prefWidth="105.0" text="Save" />
+            <Button fx:id="clearButton" layoutX="131.0" layoutY="305.0" mnemonicParsing="false" onAction="#clearForm" prefHeight="25.0" prefWidth="105.0" text="Clear Form" />
+            <Button fx:id="cancelButton" layoutX="250.0" layoutY="305.0" mnemonicParsing="false" onAction="#cancelAppointment" prefHeight="25.0" prefWidth="135.0" text="Cancel Appointment" />
+            <RadioButton fx:id="weekRadio" layoutX="876.0" layoutY="344.0" mnemonicParsing="false" text="This Week" />
+            <RadioButton fx:id="monthRadio" layoutX="963.0" layoutY="344.0" mnemonicParsing="false" text="This Month" />
+            <Label layoutX="737.0" layoutY="344.0" text="View appointments from:" />
+      </children>
+    </AnchorPane>
+  </children>
+</VBox>
