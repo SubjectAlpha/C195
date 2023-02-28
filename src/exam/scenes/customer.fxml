@@ -102,13 +102,6 @@
               </columns>
             </TableView>
             <Button fx:id="createCustomerButton" layoutX="14.0" layoutY="225.0" mnemonicParsing="false" onAction="#openCreateCustomer" text="Create Customer" />
-            <Group layoutX="164.0" layoutY="216.0">
-               <children>
-                  <TextField fx:id="reportDirectory" layoutY="19.0" onAction="#generateReports" text="C:\" />
-                  <Label text="Report Generation Location" />
-               </children>
-            </Group>
-            <Button layoutX="349.0" layoutY="225.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="136.0" text="Generate Reports" />
          </children>
     </AnchorPane>
   </children>
