@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.TimeZone;
 
 public class LoginController extends ControllerBase implements Initializable {
 
@@ -34,7 +35,7 @@ public class LoginController extends ControllerBase implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        localeLabel.setText(Locale.getDefault().toLanguageTag());
+        localeLabel.setText(TimeZone.getDefault().getDisplayName());
         if(Locale.getDefault().getLanguage().equals("fr")){
             usernameLabel.setText("Nom d’utilisateur");
             passwordLabel.setText("Mot de passe");
@@ -61,7 +62,11 @@ public class LoginController extends ControllerBase implements Initializable {
                 openWindow("customer", null, usernameInput.getText(), uid);
                 closeWindow(e);
             }else{
-                AlertHelper.CreateInformation("Your username or password was entered incorrectly.").show();
+                if(Locale.getDefault().getLanguage().equals("fr")){
+                    AlertHelper.CreateError("Votre nom d'utilisateur ou votre mot de passe n'a pas été saisi correctement").show();
+                }else{
+                    AlertHelper.CreateError("Your username or password was entered incorrectly.").show();
+                }
             }
         }catch(SQLException ex){
             AlertHelper.CreateError(ex.getMessage()).show();

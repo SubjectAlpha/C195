@@ -11,6 +11,7 @@ Import the project file in to your IntelliJ
 Set the 'Main' file in src.exam to be the launch source
 Import both the JavaFX library and the MySQL connector library to your project
 Ensure your Java version is set to 17.0.1 in your launch arguments
+Ensure that "--module-path ${PATH_TO_FX} --add-modules javafx.fxml,javafx.controls,javafx.graphics" is added to your Java VM launch options.
 Your project should now be ready to run.
 
 Running MySQL reports:
