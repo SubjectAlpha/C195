@@ -68,6 +68,7 @@ public class AppointmentController extends ControllerBase {
             var aptType = this.appointmentType.getText();
             var aptStart = DateHelper.localToUTC(parsedStartDate, parsedStartTime);
             var aptEnd = DateHelper.localToUTC(parsedEndDate, parsedEndTime);
+            var aptUserId = Integer.parseInt(this.appointmentUserId.getText());
             var inputsValid = (isValidText(aptTitle) && isValidText(aptDesc) && isValidText(aptLoc) && isValidText(aptTitle));
 
             if (DateHelper.isBetweenBusinessHoursEST(parsedStartTime, parsedEndTime) && DateHelper.isNotDuringWeekend(parsedStartDate, parsedEndDate) && inputsValid) {
@@ -75,7 +76,13 @@ public class AppointmentController extends ControllerBase {
                 var localEndDateTime = DateHelper.utctoLocal(aptEnd.toInstant());
                 var appointments = this.appointmentTable.getItems();
                 for(var apt : appointments){
-                    if(localStartDateTime.after(apt.getStart()) && localEndDateTime.before(apt.getEnd())){
+                    var occursDuring = ((this.appointmentContactSelect.getSelectionModel().getSelectedItem().ID == apt.getContact_ID())
+                            || (aptUserId == apt.getUser_ID()))
+                            && ((localStartDateTime.after(apt.getStart()) && localEndDateTime.before(apt.getEnd()))
+                            || (localStartDateTime.before(apt.getStart()) && localEndDateTime.before(apt.getEnd()))
+                            || (localStartDateTime.before(apt.getStart()) && localEndDateTime.after(apt.getEnd()))
+                            || (localStartDateTime.equals(apt.getStart()) && localEndDateTime.equals(apt.getEnd())));
+                    if(occursDuring){
                         AlertHelper.CreateError("There is already a meeting scheduled at your selected time").show();
                         return;
                     }
