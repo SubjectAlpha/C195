@@ -203,8 +203,11 @@ public class Appointment {
      */
     public static ArrayList<Appointment> findByCustomerWeek(int customerId) {
         var getAppointmentsQuery = "SELECT * FROM client_schedule.appointments WHERE Customer_ID=? AND YEARWEEK(Start, 1) = YEARWEEK(CURDATE(), 1) ORDER BY Start";
+        if(customerId < 0) {
+            getAppointmentsQuery = "SELECT * FROM client_schedule.appointments WHERE YEARWEEK(Start, 1) = YEARWEEK(CURDATE(), 1) ORDER BY Start";
+        }
         try(var stmt = JDBC.getConnection().prepareStatement(getAppointmentsQuery)) {
-            stmt.setInt(1, customerId);
+            if(customerId > 0) { stmt.setInt(1, customerId); }
             var results = stmt.executeQuery();
             var appointments = new ArrayList<Appointment>();
             while(results.next()) {
@@ -238,8 +241,13 @@ public class Appointment {
      */
     public static ArrayList<Appointment> findByCustomerMonth(int customerId) {
         var getAppointmentsQuery = "SELECT * FROM client_schedule.appointments WHERE Customer_ID=? AND MONTH(Start) = MONTH(CURDATE()) AND YEAR(Start) = YEAR(CURDATE()) ORDER BY Start";
+        if(customerId < 0) {
+            getAppointmentsQuery = "SELECT * FROM client_schedule.appointments WHERE MONTH(Start) = MONTH(CURDATE()) AND YEAR(Start) = YEAR(CURDATE()) ORDER BY Start";
+        }
         try(var stmt = JDBC.getConnection().prepareStatement(getAppointmentsQuery)) {
-            stmt.setInt(1, customerId);
+            if(customerId > 0) {
+                stmt.setInt(1, customerId);
+            }
             var results = stmt.executeQuery();
             var appointments = new ArrayList<Appointment>();
             while(results.next()) {

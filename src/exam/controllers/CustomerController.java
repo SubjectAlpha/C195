@@ -83,6 +83,9 @@ public class CustomerController extends ControllerBase {
         }
     }
 
+    @FXML public void viewAllAppointments(ActionEvent e) {
+        openWindow("appointment", -1, this.Username, this.UserId);
+    }
     private final EventHandler<MouseEvent> clickHandler = mouseEvent -> {
         try{
             var customer = customerTable.getSelectionModel().getSelectedItem();
