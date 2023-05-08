@@ -2,6 +2,7 @@ package exam.controllers;
 
 import exam.entities.Appointment;
 import exam.entities.Contact;
+import exam.entities.Customer;
 import exam.utility.AlertHelper;
 import exam.utility.DateHelper;
 import exam.utility.JDBC;
@@ -47,6 +48,7 @@ public class AppointmentController extends ControllerBase {
     @FXML TextField appointmentStartTime;
     @FXML TextField appointmentEndTime;
     @FXML ComboBox<Contact> appointmentContactSelect;
+    @FXML ComboBox<Customer> appointmentCustomerSelect;
     @FXML Button saveButton;
     @FXML RadioButton weekRadio;
     @FXML RadioButton monthRadio;
@@ -211,6 +213,9 @@ public class AppointmentController extends ControllerBase {
         Create_Date.setCellValueFactory(new PropertyValueFactory<>("Create_Date"));
         Last_Updated_By.setCellValueFactory(new PropertyValueFactory<>("Last_Updated_By"));
         Last_Update.setCellValueFactory(new PropertyValueFactory<>("Last_Update"));
+        appointmentCustomerSelect.getItems().addAll(Customer.findAll());
+
+
 
         var query = "SELECT Contact_ID, Contact_Name FROM client_schedule.contacts";
         try(var stmt = JDBC.getConnection().prepareStatement(query)){
@@ -225,6 +230,12 @@ public class AppointmentController extends ControllerBase {
         final ToggleGroup group = new ToggleGroup();
         weekRadio.setToggleGroup(group);
         monthRadio.setToggleGroup(group);
+
+        /**
+         * C195 Task 1: Requirement B: Write at least two different lambda expressions to improve your code.
+         * "Using lambda expressions also improves the collection libraries", Oracle claims. This would make using a lambda expression the faster option for iterating, filtering, and extracting data from a collection.
+         * Also, lambda expressions have concurrency features that improve performance in multi-core environments.
+         */
         weekRadio.setOnAction(e -> {
             refreshAppointmentTable(false);
         });
@@ -235,6 +246,11 @@ public class AppointmentController extends ControllerBase {
         weekRadio.setSelected(true);
     }
 
+    /**
+     * C195 Task 1: Requirement B: Write at least two different lambda expressions to improve your code.
+     * "Using lambda expressions also improves the collection libraries", Oracle claims. This would make using a lambda expression the faster option for iterating, filtering, and extracting data from a collection.
+     * Also, lambda expressions have concurrency features that improve performance in multi-core environments.
+     */
     private final EventHandler<MouseEvent> clickHandler = e -> {
         var apt = this.appointmentTable.getSelectionModel().getSelectedItem();
         this.appointmentId.setText(Integer.valueOf(apt.getAppointment_ID()).toString());
@@ -247,6 +263,7 @@ public class AppointmentController extends ControllerBase {
         this.appointmentStartTime.setText(apt.getStart().toLocalDateTime().toLocalTime().toString());
         this.appointmentEndDate.setValue(apt.getEnd().toLocalDateTime().toLocalDate());
         this.appointmentEndTime.setText(apt.getEnd().toLocalDateTime().toLocalTime().toString());
+        this.appointmentCustomerSelect.setValue(Customer.get(apt.getUser_ID()));
         this.appointmentContactSelect.setValue(Contact.getById(apt.getUser_ID()));
     };
 

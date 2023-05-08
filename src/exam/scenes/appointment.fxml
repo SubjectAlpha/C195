@@ -168,7 +168,13 @@
                   <Label text="End Time (24H Format)" />
                </children>
             </Group>
-            <Group layoutX="728.0" layoutY="248.0">
+            <Group layoutX="719.0" layoutY="249.0">
+               <children>
+                  <Label text="Customer" />
+                  <ComboBox fx:id="appointmentCustomerSelect" layoutX="2.0" layoutY="20.0" prefWidth="150.0" />
+               </children>
+            </Group>
+            <Group layoutX="876.0" layoutY="249.0">
                <children>
                   <Label text="Contact" />
                   <ComboBox fx:id="appointmentContactSelect" layoutX="2.0" layoutY="20.0" prefWidth="150.0" />

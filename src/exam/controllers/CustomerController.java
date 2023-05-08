@@ -86,6 +86,12 @@ public class CustomerController extends ControllerBase {
     @FXML public void viewAllAppointments(ActionEvent e) {
         openWindow("appointment", -1, this.Username, this.UserId);
     }
+
+    /**
+     * C195 Task 1: Requirement B: Write at least two different lambda expressions to improve your code.
+     * "Using lambda expressions also improves the collection libraries", Oracle claims. This would make using a lambda expression the faster option for iterating, filtering, and extracting data from a collection.
+     * Also, lambda expressions have concurrency features that improve performance in multi-core environments.
+     */
     private final EventHandler<MouseEvent> clickHandler = mouseEvent -> {
         try{
             var customer = customerTable.getSelectionModel().getSelectedItem();

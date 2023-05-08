@@ -31,17 +31,17 @@ public class JDBC {
         }
     }
 
-        public static Connection getConnection() {
-        return connection;
+    public static Connection getConnection() {
+    return connection;
+    }
+    public static void closeConnection() {
+        try {
+            connection.close();
+            System.out.println("Connection closed!");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
-        public static void closeConnection() {
-            try {
-                connection.close();
-                System.out.println("Connection closed!");
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-        }
+    }
 
     public static void makePreparedStatement(String sqlStatement, Connection conn) throws SQLException {
         if (conn != null) {

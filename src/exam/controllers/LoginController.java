@@ -35,7 +35,7 @@ public class LoginController extends ControllerBase implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        localeLabel.setText(TimeZone.getDefault().getDisplayName());
+        localeLabel.setText(TimeZone.getDefault().getID());
         if(Locale.getDefault().getLanguage().equals("fr")){
             usernameLabel.setText("Nom d’utilisateur");
             passwordLabel.setText("Mot de passe");

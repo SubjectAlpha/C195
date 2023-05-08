@@ -101,7 +101,7 @@
                </children>
             </Group>
             <Button fx:id="signinBtn" layoutX="294.0" layoutY="198.0" mnemonicParsing="false" onAction="#signin" text="Sign In" />
-            <Label fx:id="localeLabel" layoutX="359.0" layoutY="246.0" prefHeight="35.0" prefWidth="36.0" text="en-US" />
+            <Label fx:id="localeLabel" layoutX="272.0" layoutY="252.0" prefHeight="35.0" prefWidth="123.0" text="en-US" />
             <Text fx:id="errorText" layoutX="283.0" layoutY="99.0" strokeType="OUTSIDE" strokeWidth="0.0" />
       </children>
     </AnchorPane>

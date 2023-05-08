@@ -2,8 +2,6 @@ package exam.entities;
 
 import exam.utility.AlertHelper;
 import exam.utility.JDBC;
-
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -166,6 +164,41 @@ public class Customer {
     }
 
     /**
+     * This function will delete a user in the database and all of their appointments.
+     * @param customer_id ID of the customer you wish to delete.
+     * @return result of the delete process
+     */
+    public static Customer get(int customer_id) {
+        String customerQuery = "SELECT * FROM client_schedule.customers WHERE Customer_ID=?";
+
+        try(PreparedStatement stmt = JDBC.getConnection().prepareStatement(customerQuery)){
+            stmt.setInt(1, customer_id);
+            var res = stmt.executeQuery();
+
+            Customer customer = null;
+            if(res.next()){
+                var id = res.getInt("Customer_ID");
+                var divisionId = res.getInt("Division_ID");
+                var name = res.getString("Customer_Name");
+                var address = res.getString("Address");
+                var postal = res.getString("Postal_Code");
+                var phone = res.getString("Phone");
+                var createdBy = res.getString("Created_By");
+                var createDate = res.getTimestamp("Create_Date");
+                var updatedBy = res.getString("Last_Updated_By");
+                var lastUpdate = res.getTimestamp("Last_Update");
+
+                customer = new Customer(id, name, address, postal, phone, createdBy, createDate, updatedBy, lastUpdate, divisionId);
+            }
+            return customer;
+
+        } catch (SQLException e) {
+            AlertHelper.CreateError(e.getMessage()).show();
+        }
+        return null;
+    }
+
+    /**
      * @return List of all customers in the database
      */
     public static ArrayList<Customer> findAll() {
@@ -217,5 +250,10 @@ public class Customer {
             AlertHelper.CreateError(e.getMessage()).show();
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return this.Customer_Name;
     }
 }
