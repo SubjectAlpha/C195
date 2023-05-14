@@ -9,6 +9,7 @@ import exam.utility.JDBC;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventTarget;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -214,8 +215,8 @@ public class AppointmentController extends ControllerBase {
         Last_Updated_By.setCellValueFactory(new PropertyValueFactory<>("Last_Updated_By"));
         Last_Update.setCellValueFactory(new PropertyValueFactory<>("Last_Update"));
         appointmentCustomerSelect.getItems().addAll(Customer.findAll());
-
-
+        appointmentCustomerSelect.setValue(Customer.get((int)o));
+        appointmentCustomerSelect.setOnAction(changeHandler);
 
         var query = "SELECT Contact_ID, Contact_Name FROM client_schedule.contacts";
         try(var stmt = JDBC.getConnection().prepareStatement(query)){
@@ -267,12 +268,16 @@ public class AppointmentController extends ControllerBase {
         this.appointmentContactSelect.setValue(Contact.getById(apt.getUser_ID()));
     };
 
+    private final EventHandler<ActionEvent> changeHandler = e -> {
+        refreshAppointmentTable(this.monthRadio.isSelected());
+    };
+
     private void refreshAppointmentTable(boolean month) {
         this.appointmentTable.getItems().removeAll(this.appointmentTable.getItems());
         if(month){
-            this.appointmentTable.getItems().addAll(Appointment.findByCustomerMonth(Integer.parseInt(this.dataObject.toString())));
+            this.appointmentTable.getItems().addAll(Appointment.findByCustomerMonth(this.appointmentCustomerSelect.getSelectionModel().getSelectedItem().getCustomer_ID()));
         } else {
-            this.appointmentTable.getItems().addAll(Appointment.findByCustomerWeek(Integer.parseInt(this.dataObject.toString())));
+            this.appointmentTable.getItems().addAll(Appointment.findByCustomerWeek(this.appointmentCustomerSelect.getSelectionModel().getSelectedItem().getCustomer_ID()));
         }
 
         this.appointmentTable.refresh();
