@@ -100,6 +100,7 @@
             </TableView>
             <Button fx:id="createCustomerButton" layoutX="14.0" layoutY="225.0" mnemonicParsing="false" onAction="#openCreateCustomer" text="Create Customer" />
             <Button fx:id="viewAllAppointments" layoutX="132.0" layoutY="225.0" mnemonicParsing="false" onAction="#viewAllAppointments" text="View All Appointments" />
+            <Button layoutX="14.0" layoutY="258.0" mnemonicParsing="false" onAction="#openReports" prefHeight="25.0" prefWidth="105.0" text="View Reports" />
          </children>
     </AnchorPane>
   </children>
