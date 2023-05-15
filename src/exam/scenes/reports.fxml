@@ -101,7 +101,8 @@
                 </Group>
                 <TableView fx:id="report2Table" layoutX="261.0" layoutY="14.0" prefHeight="200.0" prefWidth="361.0">
                     <columns>
-                        <TableColumn fx:id="aptId" prefWidth="75.0" text="ID" />
+                        <TableColumn fx:id="contactName" prefWidth="75.0" text="Contact Name" />
+                        <TableColumn fx:id="aptId" prefWidth="75.0" text="Appointment ID" />
                         <TableColumn fx:id="aptTitle" prefWidth="75.0" text="Title" />
                         <TableColumn fx:id="aptDesc" prefWidth="75.0" text="Description" />
                         <TableColumn fx:id="aptType" prefWidth="75.0" text="Type" />

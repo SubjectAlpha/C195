@@ -274,10 +274,16 @@ public class AppointmentController extends ControllerBase {
 
     private void refreshAppointmentTable(boolean month) {
         this.appointmentTable.getItems().removeAll(this.appointmentTable.getItems());
+        int customerId = -1;
+
+        if(this.appointmentCustomerSelect.getSelectionModel().getSelectedItem() != null){
+            customerId = this.appointmentCustomerSelect.getSelectionModel().getSelectedItem().getCustomer_ID();
+        }
+
         if(month){
-            this.appointmentTable.getItems().addAll(Appointment.findByCustomerMonth(this.appointmentCustomerSelect.getSelectionModel().getSelectedItem().getCustomer_ID()));
+            this.appointmentTable.getItems().addAll(Appointment.findByCustomerMonth(customerId));
         } else {
-            this.appointmentTable.getItems().addAll(Appointment.findByCustomerWeek(this.appointmentCustomerSelect.getSelectionModel().getSelectedItem().getCustomer_ID()));
+            this.appointmentTable.getItems().addAll(Appointment.findByCustomerWeek(customerId));
         }
 
         this.appointmentTable.refresh();

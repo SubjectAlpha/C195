@@ -1,6 +1,7 @@
 package exam.controllers;
 
 import exam.entities.Appointment;
+import exam.entities.Contact;
 import exam.utility.AlertHelper;
 import exam.utility.JDBC;
 import javafx.fxml.FXML;
@@ -13,6 +14,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.net.URL;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class ReportController extends ControllerBase implements Initializable {
@@ -21,14 +23,15 @@ public class ReportController extends ControllerBase implements Initializable {
     @FXML TableColumn<Report1, Integer> r1MonthColumn;
     @FXML TableColumn<Report1, String> r1TypeColumn;
     @FXML TableColumn<Report1, Integer> r1CountColumn;
-    @FXML TableView<Appointment> report2Table;
-    @FXML TableColumn<Appointment, Integer> aptId;
-    @FXML TableColumn<Appointment, String> aptTitle;
-    @FXML TableColumn<Appointment, String> aptDesc;
-    @FXML TableColumn<Appointment, String> aptType;
-    @FXML TableColumn<Appointment, Timestamp> aptStart;
-    @FXML TableColumn<Appointment, Timestamp> aptEnd;
-    @FXML TableColumn<Appointment, Integer> aptCustId;
+    @FXML TableView<Report2> report2Table;
+    @FXML TableColumn<Report2, String> contactName;
+    @FXML TableColumn<Report2, Integer> aptId;
+    @FXML TableColumn<Report2, String> aptTitle;
+    @FXML TableColumn<Report2, String> aptDesc;
+    @FXML TableColumn<Report2, String> aptType;
+    @FXML TableColumn<Report2, Timestamp> aptStart;
+    @FXML TableColumn<Report2, Timestamp> aptEnd;
+    @FXML TableColumn<Report2, Integer> aptCustId;
     @FXML Label newCustomerCountLabel;
 
     @Override
@@ -38,6 +41,7 @@ public class ReportController extends ControllerBase implements Initializable {
         r1TypeColumn.setCellValueFactory(new PropertyValueFactory("AppointmentType"));
         r1CountColumn.setCellValueFactory(new PropertyValueFactory("Count"));
 
+        contactName.setCellValueFactory(new PropertyValueFactory("contactName"));
         aptId.setCellValueFactory(new PropertyValueFactory("Appointment_ID"));
         aptTitle.setCellValueFactory(new PropertyValueFactory("Title"));
         aptDesc.setCellValueFactory(new PropertyValueFactory("Description"));
@@ -51,18 +55,18 @@ public class ReportController extends ControllerBase implements Initializable {
                 FROM client_schedule.appointments
                 GROUP BY YEAR(Start), MONTH(Start)
                 ORDER BY YEAR(Start), MONTH(Start), Type""";
-        var report2Query = "SELECT Contact_ID, Contact_Name FROM client_schedule.contacts";
+
         var report3Query = "SELECT COUNT(*) as New_Customers FROM client_schedule.customers WHERE Create_Date BETWEEN DATE_FORMAT(NOW() - INTERVAL 1 MONTH, '%Y-%m-01 00:00:00')\n" +
                 "AND DATE_FORMAT(LAST_DAY(NOW() - INTERVAL 1 MONTH), '%Y-%m-%d 23:59:59');";
 
         try{
             var report1 = JDBC.getConnection().prepareStatement(report1Query);
-            var report2 = JDBC.getConnection().prepareStatement(report2Query);
+
             var report3 = JDBC.getConnection().prepareStatement(report3Query);
 
             var report1Result = report1.executeQuery();
             var report3Result = report3.executeQuery();
-            var report2Results = report2.executeQuery();
+
 
             while(report1Result.next()) {
                 var year =  report1Result.getInt(1);
@@ -76,10 +80,12 @@ public class ReportController extends ControllerBase implements Initializable {
                 );
             }
             report1Table.refresh();
-            while(report2Results.next()) {
-                int contactId = report2Results.getInt("Contact_ID");
-                System.out.println(contactId);
-            }
+
+            Contact.getAll().forEach(c -> {
+                report2Table.getItems().addAll(new Report2().findByContact(c.ID, c.Name));
+            });
+            //report2Table.getItems().addAll();
+            report2Table.refresh();
 
             if(report3Result.next()) {
                 newCustomerCountLabel.setText(String.valueOf(report3Result.getInt(1)));
@@ -132,6 +138,65 @@ public class ReportController extends ControllerBase implements Initializable {
 
         public void setCount(int count) {
             Count = count;
+        }
+    }
+
+    public class Report2 extends Appointment {
+        private String contactName;
+
+        Report2() {}
+
+        Report2(String contactName,
+                int id, int customer_id, int user_id,
+                int contact_id, String title, String type,
+                String description, String location, String created_by, String last_updated_by,
+                Timestamp start, Timestamp end, Timestamp create, Timestamp last_update
+            ){
+            super(id, customer_id, user_id, contact_id, title, type, description, location, created_by, last_updated_by, start, end, create, last_update);
+            this.setContactName(contactName);
+        }
+
+        /**
+         * @param contactId ID of the user whose appointments you are trying to see.
+         * @return List of user appointments, or null if an error occurred.
+         */
+        public ArrayList<Report2> findByContact(int contactId, String contactName){
+            var getAppointmentsQuery = "SELECT * FROM client_schedule.appointments WHERE Contact_ID=? ORDER BY Create_Date";
+            try(var stmt = JDBC.getConnection().prepareStatement(getAppointmentsQuery)) {
+                stmt.setInt(1, contactId);
+                var results = stmt.executeQuery();
+                var report2Results = new ArrayList<Report2>();
+                while(results.next()) {
+                    var id = results.getInt("Appointment_ID");
+                    var usrId = results.getInt("User_ID");
+                    var custId = results.getInt("Customer_ID");
+                    var contId = results.getInt("Contact_ID");
+                    var title = results.getString("Title");
+                    var description = results.getString("Description");
+                    var location = results.getString("Location");
+                    var type = results.getString("Type");
+                    var start = results.getTimestamp("Start");
+                    var end = results.getTimestamp("End");
+                    var createdBy = results.getString("Created_By");
+                    var createDate = results.getTimestamp("Create_Date");
+                    var updatedBy = results.getString("Last_Updated_By");
+                    var lastUpdate = results.getTimestamp("Last_Update");
+
+                    report2Results.add(new Report2(contactName, id, custId, usrId, contId, title, type, description, location, createdBy, updatedBy, start, end, createDate, lastUpdate));
+                }
+                return report2Results;
+            } catch (SQLException ex) {
+                AlertHelper.CreateError(ex.getMessage()).show();
+            }
+            return null;
+        }
+
+        public String getContactName() {
+            return contactName;
+        }
+
+        public void setContactName(String contactName) {
+            this.contactName = contactName;
         }
     }
 }
