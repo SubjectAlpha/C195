@@ -93,7 +93,7 @@
       <children>
             <TableView fx:id="appointmentTable" layoutX="11.0" prefHeight="200.0" prefWidth="1058.0" AnchorPane.leftAnchor="11.0" AnchorPane.topAnchor="0.0">
               <columns>
-                <TableColumn fx:id="Appointment_ID" prefWidth="75.0" text="ID" />
+                <TableColumn fx:id="Appointment_ID" prefWidth="75.0" text="Appointment ID" />
                 <TableColumn fx:id="Title" prefWidth="75.0" text="Title" />
                   <TableColumn fx:id="Description" prefWidth="75.0" text="Description" />
                   <TableColumn fx:id="Location" prefWidth="75.0" text="Location" />
@@ -101,6 +101,7 @@
                   <TableColumn fx:id="Start" prefWidth="75.0" text="Start" />
                   <TableColumn fx:id="End" prefWidth="75.0" text="End" />
                   <TableColumn fx:id="User_ID" prefWidth="75.0" text="User_ID" />
+                  <TableColumn fx:id="Customer_ID" prefWidth="75.0" text="Customer_ID" />
                   <TableColumn fx:id="Contact_ID" prefWidth="75.0" text="Contact_ID" />
                   <TableColumn fx:id="Created_By" prefWidth="75.0" text="Created By" />
                   <TableColumn fx:id="Create_Date" prefWidth="108.0" text="Creation Date" />

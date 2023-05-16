@@ -25,6 +25,11 @@ public class Appointment {
 
     public Appointment(){}
 
+    public Appointment(int id, String type) {
+        this.Appointment_ID = id;
+        this.Type = type;
+    }
+
     public Appointment(int id, int customer_id, int user_id,
            int contact_id, String title, String type,
            String description, String location, String created_by, String last_updated_by,
@@ -289,5 +294,21 @@ public class Appointment {
             AlertHelper.CreateError(e.getMessage()).show();
         }
         return result;
+    }
+
+    public static Appointment getOnlyType(int id){
+        var appointmentsQuery = "SELECT * FROM client_schedule.appointments WHERE Appointment_ID=?";
+        try(var stmt = JDBC.getConnection().prepareStatement(appointmentsQuery)) {
+            stmt.setInt(1, id);
+            var rs = stmt.executeQuery();
+            if(rs.next()){
+                var aptType = rs.getString("Type");
+
+                return new Appointment(id, aptType);
+            }
+        }catch(SQLException e){
+            AlertHelper.CreateError(e.getMessage()).show();
+        }
+        return null;
     }
 }

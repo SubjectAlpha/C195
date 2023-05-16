@@ -32,6 +32,7 @@ public class AppointmentController extends ControllerBase {
     @FXML TableColumn<Appointment, String> Start;
     @FXML TableColumn<Appointment, String> End;
     @FXML TableColumn<Appointment, Integer> User_ID;
+    @FXML TableColumn<Appointment, Integer> Customer_ID;
     @FXML TableColumn<Appointment, Integer> Contact_ID;
     @FXML TableColumn<Appointment, String> Created_By;
     @FXML TableColumn<Appointment, String> Create_Date;
@@ -80,13 +81,16 @@ public class AppointmentController extends ControllerBase {
                 var localStartDateTime = DateHelper.utctoLocal(aptStart.toInstant());
                 var localEndDateTime = DateHelper.utctoLocal(aptEnd.toInstant());
                 var appointments = this.appointmentTable.getItems();
+
                 for(var apt : appointments){
+                    var startsAfterEndsBefore = localStartDateTime.after(apt.getStart()) && localEndDateTime.before(apt.getEnd());
+                    var startsBeforeEndsBefore = localStartDateTime.before(apt.getStart()) && localEndDateTime.before(apt.getEnd());
+                    var startsBeforeEndsAfter = localStartDateTime.before(apt.getStart()) && localEndDateTime.after(apt.getEnd());
+                    var startsAfterEndsAfter = localStartDateTime.after(apt.getStart()) && localEndDateTime.after(apt.getEnd());
+                    var startsAtEndsAt = localStartDateTime.equals(apt.getStart()) && localEndDateTime.equals(apt.getEnd());
                     var occursDuring = ((contactId == apt.getContact_ID())
                             || (aptUserId == apt.getUser_ID()))
-                            && ((localStartDateTime.after(apt.getStart()) && localEndDateTime.before(apt.getEnd()))
-                            || (localStartDateTime.before(apt.getStart()) && localEndDateTime.before(apt.getEnd()))
-                            || (localStartDateTime.before(apt.getStart()) && localEndDateTime.after(apt.getEnd()))
-                            || (localStartDateTime.equals(apt.getStart()) && localEndDateTime.equals(apt.getEnd())));
+                            && startsBeforeEndsBefore || startsAfterEndsBefore || startsAfterEndsAfter || startsBeforeEndsAfter || startsAtEndsAt;
                     if(occursDuring){
                         AlertHelper.CreateError("There is already a meeting scheduled at your selected time").show();
                         return;
@@ -185,12 +189,17 @@ public class AppointmentController extends ControllerBase {
 
     @FXML
     public void cancelAppointment(ActionEvent e) {
-        if(this.appointmentId.getText().isBlank())
+        var appointmentId = this.appointmentId.getText();
+        if(appointmentId.isBlank())
         {
             return;
         }
-        Appointment.delete(Integer.parseInt(this.appointmentId.getText()));
-        refreshAppointmentTable(this.monthRadio.isSelected());
+        var appointment = Appointment.getOnlyType(Integer.parseInt(appointmentId));
+        var result = new Alert(Alert.AlertType.CONFIRMATION, "Please confirm you wish to delete appointment " + appointmentId + " and type: " + appointment.getType()).showAndWait();
+        if(result.get() == ButtonType.OK){
+            Appointment.delete(Integer.parseInt(appointmentId));
+            refreshAppointmentTable(this.monthRadio.isSelected());
+        }
     }
 
     /**
@@ -212,6 +221,7 @@ public class AppointmentController extends ControllerBase {
         Location.setCellValueFactory(new PropertyValueFactory<>("Location"));
         Start.setCellValueFactory(col -> new ReadOnlyStringWrapper(DateHelper.utctoLocal(col.getValue().getStart().toInstant()).toString()));
         End.setCellValueFactory(col -> new ReadOnlyStringWrapper(DateHelper.utctoLocal(col.getValue().getEnd().toInstant()).toString()));
+        Customer_ID.setCellValueFactory(new PropertyValueFactory<>("Customer_ID"));
         User_ID.setCellValueFactory(new PropertyValueFactory<>("User_ID"));
         Contact_ID.setCellValueFactory(new PropertyValueFactory<>("Contact_ID"));
         Created_By.setCellValueFactory(new PropertyValueFactory<>("Created_By"));
