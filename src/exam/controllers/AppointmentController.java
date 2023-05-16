@@ -73,13 +73,15 @@ public class AppointmentController extends ControllerBase {
             var aptEnd = DateHelper.localToUTC(parsedEndDate, parsedEndTime);
             var aptUserId = Integer.parseInt(this.appointmentUserId.getText());
             var inputsValid = (isValidText(aptTitle) && isValidText(aptDesc) && isValidText(aptLoc) && isValidText(aptTitle));
+            var contactId = this.appointmentContactSelect.getSelectionModel().getSelectedItem().ID;
+            var customerId = this.appointmentCustomerSelect.getSelectionModel().getSelectedItem().getCustomer_ID();
 
-            if (DateHelper.isBetweenBusinessHoursEST(parsedStartTime, parsedEndTime) && DateHelper.isNotDuringWeekend(parsedStartDate, parsedEndDate) && inputsValid) {
+            if (DateHelper.isBetweenBusinessHoursEST(parsedStartTime, parsedEndTime) && DateHelper.isNotDuringWeekend(parsedStartDate, parsedEndDate) && inputsValid && contactId > 0 && customerId > 0) {
                 var localStartDateTime = DateHelper.utctoLocal(aptStart.toInstant());
                 var localEndDateTime = DateHelper.utctoLocal(aptEnd.toInstant());
                 var appointments = this.appointmentTable.getItems();
                 for(var apt : appointments){
-                    var occursDuring = ((this.appointmentContactSelect.getSelectionModel().getSelectedItem().ID == apt.getContact_ID())
+                    var occursDuring = ((contactId == apt.getContact_ID())
                             || (aptUserId == apt.getUser_ID()))
                             && ((localStartDateTime.after(apt.getStart()) && localEndDateTime.before(apt.getEnd()))
                             || (localStartDateTime.before(apt.getStart()) && localEndDateTime.before(apt.getEnd()))
@@ -102,8 +104,8 @@ public class AppointmentController extends ControllerBase {
                         stmt.setTimestamp(5, aptStart);
                         stmt.setTimestamp(6, aptEnd);
                         stmt.setTimestamp(7, Timestamp.from(Instant.now()));
-                        stmt.setInt(8, Integer.parseInt(this.dataObject.toString()));
-                        stmt.setInt(9, this.appointmentContactSelect.getSelectionModel().getSelectedItem().ID);
+                        stmt.setInt(8, customerId);
+                        stmt.setInt(9, contactId);
                         stmt.setString(10, this.Username);
                         stmt.setInt(11, aptId);
 
@@ -128,8 +130,8 @@ public class AppointmentController extends ControllerBase {
                             stmt.setTimestamp(5, aptStart);
                             stmt.setTimestamp(6, aptEnd);
                             stmt.setInt(7, Integer.parseInt(this.appointmentUserId.getText()));
-                            stmt.setInt(8, Integer.parseInt(this.dataObject.toString()));
-                            stmt.setInt(9, this.appointmentContactSelect.getSelectionModel().getSelectedItem().ID);
+                            stmt.setInt(8, customerId);
+                            stmt.setInt(9, contactId);
                             stmt.setTimestamp(10, Timestamp.from(Instant.now()));
                             stmt.setString(11, this.Username);
                             stmt.setTimestamp(12, Timestamp.from(Instant.now()));
@@ -153,11 +155,13 @@ public class AppointmentController extends ControllerBase {
                 }
             }
             else{
-                AlertHelper.CreateError("Your appointment must be scheduled between 08:00 and 22:00 EST on weekdays only").show();
+                AlertHelper.CreateError("Your appointment must be scheduled between 08:00 and 22:00 EST on weekdays only. Also ensure that all boxes are filled out properly.").show();
             }
         }catch(DateTimeParseException ex) {
             AlertHelper.CreateError("Failed to parse either the start or end time.").show();
         }
+
+        refreshAppointmentTable(this.monthRadio.isSelected());
     }
 
     /**
@@ -185,8 +189,8 @@ public class AppointmentController extends ControllerBase {
         {
             return;
         }
-
-
+        Appointment.delete(Integer.parseInt(this.appointmentId.getText()));
+        refreshAppointmentTable(this.monthRadio.isSelected());
     }
 
     /**
