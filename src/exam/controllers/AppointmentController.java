@@ -72,7 +72,7 @@ public class AppointmentController extends ControllerBase {
             var aptType = this.appointmentType.getText();
             var aptStart = DateHelper.localToUTC(parsedStartDate, parsedStartTime);
             var aptEnd = DateHelper.localToUTC(parsedEndDate, parsedEndTime);
-            var aptUserId = Integer.parseInt(this.appointmentUserId.getText());
+
             var inputsValid = (isValidText(aptTitle) && isValidText(aptDesc) && isValidText(aptLoc) && isValidText(aptTitle));
             var contactId = this.appointmentContactSelect.getSelectionModel().getSelectedItem().ID;
             var customerId = this.appointmentCustomerSelect.getSelectionModel().getSelectedItem().getCustomer_ID();
@@ -86,10 +86,10 @@ public class AppointmentController extends ControllerBase {
                     var startsAfterEndsBefore = localStartDateTime.after(apt.getStart()) && localEndDateTime.before(apt.getEnd());
                     var startsBeforeEndsBefore = localStartDateTime.before(apt.getStart()) && localEndDateTime.before(apt.getEnd());
                     var startsBeforeEndsAfter = localStartDateTime.before(apt.getStart()) && localEndDateTime.after(apt.getEnd());
-                    var startsAfterEndsAfter = localStartDateTime.after(apt.getStart()) && localEndDateTime.after(apt.getEnd());
+                    var startsAfterEndsAfter = localStartDateTime.after(apt.getStart()) && localEndDateTime.after(apt.getEnd()) && !(localStartDateTime.after(apt.getStart()));
                     var startsAtEndsAt = localStartDateTime.equals(apt.getStart()) && localEndDateTime.equals(apt.getEnd());
                     var occursDuring = ((contactId == apt.getContact_ID())
-                            || (aptUserId == apt.getUser_ID()))
+                            || (customerId == apt.getCustomer_ID()))
                             && startsBeforeEndsBefore || startsAfterEndsBefore || startsAfterEndsAfter || startsBeforeEndsAfter || startsAtEndsAt;
                     if(occursDuring){
                         AlertHelper.CreateError("There is already a meeting scheduled at your selected time").show();
