@@ -56,8 +56,11 @@ public class ReportController extends ControllerBase implements Initializable {
                 GROUP BY YEAR(Start), MONTH(Start)
                 ORDER BY YEAR(Start), MONTH(Start), Type""";
 
-        var report3Query = "SELECT COUNT(*) as New_Customers FROM client_schedule.customers WHERE Create_Date BETWEEN DATE_FORMAT(NOW() - INTERVAL 1 MONTH, '%Y-%m-01 00:00:00')\n" +
-                "AND DATE_FORMAT(LAST_DAY(NOW() - INTERVAL 1 MONTH), '%Y-%m-%d 23:59:59');";
+        var report3Query = """
+                SELECT count(*) FROM client_schedule.customers
+                       WHERE MONTH(Create_Date) = MONTH(now())
+                       AND YEAR(Create_Date) = YEAR(now())
+                       GROUP BY DATE(Create_Date)""";
 
         try{
             var report1 = JDBC.getConnection().prepareStatement(report1Query);
@@ -84,7 +87,6 @@ public class ReportController extends ControllerBase implements Initializable {
             Contact.getAll().forEach(c -> {
                 report2Table.getItems().addAll(new Report2().findByContact(c.ID, c.Name));
             });
-            //report2Table.getItems().addAll();
             report2Table.refresh();
 
             if(report3Result.next()) {
