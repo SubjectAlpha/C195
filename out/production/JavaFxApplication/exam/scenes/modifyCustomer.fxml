@@ -121,7 +121,7 @@
                </children>
             </Group>
             <ComboBox fx:id="firstDivisionSelect" layoutX="21.0" layoutY="310.0" prefWidth="150.0" />
-            <ComboBox fx:id="countrySelect" layoutX="197.0" layoutY="310.0" prefWidth="150.0" />
+            <ComboBox fx:id="countrySelect" layoutX="197.0" layoutY="310.0" onAction="#countrySelectHandler" prefWidth="150.0" />
          </children>
     </AnchorPane>
   </children>

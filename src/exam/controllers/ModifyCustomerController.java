@@ -1,9 +1,11 @@
 package exam.controllers;
 
 import exam.entities.Customer;
+import exam.entities.Location;
 import exam.utility.AlertHelper;
 import exam.utility.JDBC;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -23,8 +25,8 @@ public class ModifyCustomerController extends ControllerBase {
     @FXML TextField customerPhone;
     @FXML TextField customerAddress;
     @FXML TextField customerPostal;
-    @FXML ComboBox<String> countrySelect;
-    @FXML ComboBox<String> firstDivisionSelect;
+    @FXML ComboBox<Location> countrySelect;
+    @FXML ComboBox<Location> firstDivisionSelect;
     @FXML Button deleteBtn;
     @FXML Button apptsBtn;
 
@@ -34,9 +36,11 @@ public class ModifyCustomerController extends ControllerBase {
      */
     @Override
     public void setDataObject(Object customer) {
+        countrySelect.getItems().addAll(Location.GetCountries());
         if(customer != null){
             Customer c = (Customer) customer;
             this.dataObject = c;
+            firstDivisionSelect.getItems().addAll(Location.GetDivisions(c.getCountryId()));
 
             customerId.setText(String.valueOf(c.getCustomer_ID()));
             customerName.setText(c.getCustomer_Name());
@@ -48,26 +52,7 @@ public class ModifyCustomerController extends ControllerBase {
         }else{
             deleteBtn.setVisible(false);
             apptsBtn.setVisible(false);
-        }
-
-        //Load countries
-        try(PreparedStatement stmt = JDBC.getConnection().prepareStatement("SELECT Country FROM client_schedule.countries")) {
-            var rs = stmt.executeQuery();
-            while(rs.next()) {
-                countrySelect.getItems().add(rs.getString("Country"));
-            }
-        } catch(SQLException e) {
-            AlertHelper.CreateError(e.getMessage()).show();
-        }
-
-        //Load divisions
-        try(PreparedStatement stmt = JDBC.getConnection().prepareStatement("SELECT Division_ID, Division FROM client_schedule.first_level_divisions")) {
-            var rs = stmt.executeQuery();
-            while(rs.next()) {
-                firstDivisionSelect.getItems().add(rs.getString("Division"));
-            }
-        } catch(SQLException e) {
-            AlertHelper.CreateError(e.getMessage()).show();
+            firstDivisionSelect.getItems().addAll(Location.GetDivisions());
         }
     }
 
@@ -98,29 +83,18 @@ public class ModifyCustomerController extends ControllerBase {
      */
     @FXML
     public void modify(ActionEvent e) {
-        int divisionId = -1;
-        var getDivisionIdQuery = "SELECT Division_ID FROM client_schedule.first_level_divisions WHERE Division=?";
-
         if(this.dataObject != null) {
-            Customer c = (Customer) this.dataObject;
-            try(PreparedStatement stmt = JDBC.getConnection().prepareStatement(getDivisionIdQuery)){
-                stmt.setString(1, this.firstDivisionSelect.getSelectionModel().getSelectedItem());
-                var res = stmt.executeQuery();
-                while(res.next()){
-                    divisionId = res.getInt("Division_ID");
-                }
-
-                var updateCustQuery = "UPDATE client_schedule.customers SET Customer_Name=?, Address=?, Postal_Code=?, Division_ID=?, Phone=?, Last_Update=?, Last_Updated_By=? WHERE Customer_ID=?";
-                var updateCustStmt = JDBC.getConnection().prepareStatement(updateCustQuery);
-                updateCustStmt.setString(1, this.customerName.getText());
-                updateCustStmt.setString(2, this.customerAddress.getText());
-                updateCustStmt.setString(3, this.customerPostal.getText());
-                updateCustStmt.setInt(4, divisionId);
-                updateCustStmt.setString(5, this.customerPhone.getText());
-                updateCustStmt.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
-                updateCustStmt.setString(7, this.Username);
-                updateCustStmt.setInt(8, parseInt(this.customerId.getText()));
-                var result = updateCustStmt.execute();
+            var updateCustQuery = "UPDATE client_schedule.customers SET Customer_Name=?, Address=?, Postal_Code=?, Division_ID=?, Phone=?, Last_Update=?, Last_Updated_By=? WHERE Customer_ID=?";
+            try(PreparedStatement stmt = JDBC.getConnection().prepareStatement(updateCustQuery)){
+                stmt.setString(1, this.customerName.getText());
+                stmt.setString(2, this.customerAddress.getText());
+                stmt.setString(3, this.customerPostal.getText());
+                stmt.setInt(4, this.firstDivisionSelect.getSelectionModel().getSelectedItem().getID());
+                stmt.setString(5, this.customerPhone.getText());
+                stmt.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
+                stmt.setString(7, this.Username);
+                stmt.setInt(8, parseInt(this.customerId.getText()));
+                var result = stmt.execute();
                 if(!result) {
                     AlertHelper.CreateInformation("Customer updated").show();
                     openWindow("customer", null, this.Username, this.UserId);
@@ -130,33 +104,25 @@ public class ModifyCustomerController extends ControllerBase {
                 AlertHelper.CreateError(ex.getMessage()).show();
             }
         } else {
-            try(PreparedStatement stmt = JDBC.getConnection().prepareStatement(getDivisionIdQuery)) {
-                stmt.setString(1, this.firstDivisionSelect.getSelectionModel().getSelectedItem());
-                var res = stmt.executeQuery();
-                while(res.next()){
-                    divisionId = res.getInt("Division_ID");
-                }
+            var insertCustomerQuery = "INSERT INTO client_schedule.customers (Customer_Name, Address, Postal_Code, Division_ID, Phone, Last_Update, Last_Updated_By, Create_Date, Created_By) VALUES(?,?,?,?,?,?,?,?,?)";
+            try(PreparedStatement stmt = JDBC.getConnection().prepareStatement(insertCustomerQuery)) {
+                stmt.setString(1, this.customerName.getText());
+                stmt.setString(2, this.customerAddress.getText());
+                stmt.setString(3, this.customerPostal.getText());
+                stmt.setInt(4, this.firstDivisionSelect.getSelectionModel().getSelectedItem().getID());
+                stmt.setString(5, this.customerPhone.getText());
+                stmt.setTimestamp(6, Timestamp.from(Instant.now()));
+                stmt.setString(7, this.Username);
+                stmt.setTimestamp(8, Timestamp.from(Instant.now()));
+                stmt.setInt(9, this.UserId);
 
-                var insertCustomerQuery = "INSERT INTO client_schedule.customers (Customer_Name, Address, Postal_Code, Division_ID, Phone, Last_Update, Last_Updated_By, Create_Date, Created_By) VALUES(?,?,?,?,?,?,?,?,?)";
-                var insertCustStmt = JDBC.getConnection().prepareStatement(insertCustomerQuery);
-                insertCustStmt.setString(1, this.customerName.getText());
-                insertCustStmt.setString(2, this.customerAddress.getText());
-                insertCustStmt.setString(3, this.customerPostal.getText());
-                insertCustStmt.setInt(4, divisionId);
-                insertCustStmt.setString(5, this.customerPhone.getText());
-                insertCustStmt.setTimestamp(6, Timestamp.from(Instant.now()));
-                insertCustStmt.setString(7, this.Username);
-                insertCustStmt.setTimestamp(8, Timestamp.from(Instant.now()));
-                insertCustStmt.setInt(9, this.UserId);
-
-                var result = insertCustStmt.execute();
-                if(!result) {
+                var result = stmt.execute();
+                if (!result) {
                     AlertHelper.CreateInformation("Customer created").show();
                     openWindow("customer", null, this.Username, this.UserId);
                     closeWindow(e);
                 }
-
-            } catch(SQLException ex) {
+            } catch(Exception ex){
                 AlertHelper.CreateError(ex.getMessage()).show();
             }
         }
@@ -169,5 +135,15 @@ public class ModifyCustomerController extends ControllerBase {
     public void openAppointments() {
         Customer c = (Customer)this.dataObject;
         openWindow("appointment", c.getCustomer_ID(), this.Username, this.UserId);
+    }
+
+    @FXML
+    private void countrySelectHandler(ActionEvent e) {
+        var targetObject = (ComboBox)e.getTarget();
+        var country = (Location)targetObject.getSelectionModel().getSelectedItem();
+        firstDivisionSelect.getItems().clear();
+        var locations = Location.GetDivisions(country.getID());
+        firstDivisionSelect.getItems().addAll(locations);
+        firstDivisionSelect.setValue(locations.get(0));
     }
 }

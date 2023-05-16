@@ -90,34 +90,34 @@ public class Customer {
     /**
      * @return String result of the country attached to this customer.
      */
-    public String getCountry()
+    public Location getCountry()
     {
-        String query = "SELECT country FROM client_schedule.countries WHERE country_id=?";
+        String query = "SELECT country_id, country FROM client_schedule.countries WHERE country_id=?";
         try(PreparedStatement stmt = JDBC.getConnection().prepareStatement(query)) {
             stmt.setInt(1, this.getCountryId());
             var rs = stmt.executeQuery();
             if(rs.next()) {
-                return rs.getString("country");
+                return new Location(rs.getInt(1), -1, rs.getString("country"));
             }
         } catch(SQLException e) {}
-        return "Not found";
+        return null;
     }
 
-    public String getFirstDivision()
+    public Location getFirstDivision()
     {
-        String query = "SELECT division FROM client_schedule.first_level_divisions WHERE division_id=?";
+        String query = "SELECT division_id, country_id, division FROM client_schedule.first_level_divisions WHERE division_id=?";
         try(PreparedStatement stmt = JDBC.getConnection().prepareStatement(query)) {
             stmt.setInt(1, this.Division_ID);
             var rs = stmt.executeQuery();
             if(rs.next())
             {
-                return rs.getString("division");
+                return new Location(rs.getInt(1), rs.getInt(2), rs.getString("division"));
             }
         } catch (SQLException e) {}
         return null;
     }
 
-    private int getCountryId()
+    public int getCountryId()
     {
         String query = "SELECT country_id FROM client_schedule.first_level_divisions WHERE division_ID=?";
         try(PreparedStatement stmt = JDBC.getConnection().prepareStatement(query)) {
